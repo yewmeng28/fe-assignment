@@ -1,7 +1,84 @@
 @import '../brief/design-tokens.css';
+@import './components/ui/ui.css';
+@import './components/dashboard.css';
+@import './components/transfer/transfer.css';
 
 * {
   box-sizing: border-box;
+}
+
+/*
+ * Smooth theme/segment switch.
+ *
+ * Registering the colour tokens as <color> lets the browser interpolate them.
+ * We transition them once, on <html>; every element that uses var(--text),
+ * var(--surface), etc. then updates in the same frame. (Transitioning
+ * `color`/`background` on every element instead makes children restart their
+ * transition each frame and lag behind their parents.)
+ */
+@property --bg { syntax: '<color>'; inherits: true; initial-value: #f4f6fa; }
+@property --surface { syntax: '<color>'; inherits: true; initial-value: #ffffff; }
+@property --surface-raised { syntax: '<color>'; inherits: true; initial-value: #ffffff; }
+@property --surface-muted { syntax: '<color>'; inherits: true; initial-value: #eef2f7; }
+@property --border { syntax: '<color>'; inherits: true; initial-value: #e2e8f0; }
+@property --border-strong { syntax: '<color>'; inherits: true; initial-value: #cbd5e1; }
+@property --text { syntax: '<color>'; inherits: true; initial-value: #0b1220; }
+@property --text-muted { syntax: '<color>'; inherits: true; initial-value: #4b5b70; }
+@property --text-subtle { syntax: '<color>'; inherits: true; initial-value: #66768c; }
+@property --brand { syntax: '<color>'; inherits: true; initial-value: #2457e6; }
+@property --brand-hover { syntax: '<color>'; inherits: true; initial-value: #1d46bc; }
+@property --brand-active { syntax: '<color>'; inherits: true; initial-value: #173a9c; }
+@property --brand-soft { syntax: '<color>'; inherits: true; initial-value: #e9efff; }
+@property --on-brand { syntax: '<color>'; inherits: true; initial-value: #ffffff; }
+@property --focus-ring { syntax: '<color>'; inherits: true; initial-value: #2457e6; }
+@property --hero-from { syntax: '<color>'; inherits: true; initial-value: #122a63; }
+@property --hero-to { syntax: '<color>'; inherits: true; initial-value: #2457e6; }
+@property --on-hero { syntax: '<color>'; inherits: true; initial-value: #ffffff; }
+@property --positive { syntax: '<color>'; inherits: true; initial-value: #0f7b5f; }
+@property --positive-soft { syntax: '<color>'; inherits: true; initial-value: #e6f6ef; }
+@property --negative { syntax: '<color>'; inherits: true; initial-value: #c0392b; }
+@property --negative-soft { syntax: '<color>'; inherits: true; initial-value: #fdeceb; }
+@property --warning { syntax: '<color>'; inherits: true; initial-value: #9a5b00; }
+@property --warning-soft { syntax: '<color>'; inherits: true; initial-value: #fff4d6; }
+@property --skeleton { syntax: '<color>'; inherits: true; initial-value: #e6ebf2; }
+@property --skeleton-highlight { syntax: '<color>'; inherits: true; initial-value: #f3f6fa; }
+
+/* usePreference adds this class to <html> for a moment while switching. */
+:root.theme-transition {
+  transition:
+    --bg var(--duration-base) ease,
+    --surface var(--duration-base) ease,
+    --surface-raised var(--duration-base) ease,
+    --surface-muted var(--duration-base) ease,
+    --border var(--duration-base) ease,
+    --border-strong var(--duration-base) ease,
+    --text var(--duration-base) ease,
+    --text-muted var(--duration-base) ease,
+    --text-subtle var(--duration-base) ease,
+    --brand var(--duration-base) ease,
+    --brand-hover var(--duration-base) ease,
+    --brand-active var(--duration-base) ease,
+    --brand-soft var(--duration-base) ease,
+    --on-brand var(--duration-base) ease,
+    --focus-ring var(--duration-base) ease,
+    --hero-from var(--duration-base) ease,
+    --hero-to var(--duration-base) ease,
+    --on-hero var(--duration-base) ease,
+    --positive var(--duration-base) ease,
+    --positive-soft var(--duration-base) ease,
+    --negative var(--duration-base) ease,
+    --negative-soft var(--duration-base) ease,
+    --warning var(--duration-base) ease,
+    --warning-soft var(--duration-base) ease,
+    --skeleton var(--duration-base) ease,
+    --skeleton-highlight var(--duration-base) ease;
+}
+
+/* Elements follow the animated variables directly, with no transitions of their own. */
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition: none !important;
 }
 
 html,
@@ -15,6 +92,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
+  font-size: var(--text-base);
   line-height: var(--leading-normal);
 }
 
@@ -25,54 +103,51 @@ textarea {
   font: inherit;
 }
 
-code {
-  background: var(--surface-muted);
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 0.9em;
-  padding: 0.1em 0.35em;
+h1,
+h2,
+h3,
+p {
+  margin: 0;
 }
 
-.starter {
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.amount {
+  font-variant-numeric: tabular-nums;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Page container: max 1200px, 24px margins (16px on mobile). */
+.container {
+  width: 100%;
+  max-width: var(--container);
   margin: 0 auto;
-  max-width: 720px;
-  padding: var(--space-8) var(--space-4);
+  padding-inline: var(--gutter);
 }
 
-.starter-header {
-  align-items: baseline;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  gap: var(--space-4);
-  justify-content: space-between;
-  padding-bottom: var(--space-3);
+@media (max-width: 639.98px) {
+  .container {
+    padding-inline: var(--gutter-mobile);
+  }
 }
 
-.starter-header strong {
-  font-size: var(--text-lg);
-}
-
-.starter-header span {
-  color: var(--text-muted);
-  font-size: var(--text-sm);
-}
-
-.starter-main {
-  padding-top: var(--space-6);
-}
-
-.starter-main h1 {
-  font-size: var(--text-2xl);
-  letter-spacing: var(--tracking-tight);
-  line-height: var(--leading-tight);
-}
-
-.starter-main p,
-.starter-main li {
-  color: var(--text-muted);
-}
-
-.status {
-  color: var(--positive);
-  font-weight: var(--weight-semibold);
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

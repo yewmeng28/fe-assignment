@@ -1,3 +1,4 @@
+import { applyDebugRequest, applyDebugScenario } from '../lib/debug'
 import type { ApiErrorBody } from './types'
 
 /**
@@ -28,8 +29,9 @@ export async function apiFetch<T>(
   path: string,
   init?: RequestInit,
 ): Promise<T> {
-  const url = `${BASE_URL}${path.replace(/^\//, '')}`
-  const response = await fetch(url, init)
+  const target = applyDebugScenario(path, init?.method)
+  const url = `${BASE_URL}${target.replace(/^\//, '')}`
+  const response = await fetch(url, applyDebugRequest(path, init))
   const body = (await response.json().catch(() => null)) as
     | T
     | ApiErrorBody
