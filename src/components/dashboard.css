@@ -1,0 +1,437 @@
+/* Dashboard layout and feature components. Tokens only; no hard-coded colours. */
+
+/* ---- Header ---- */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.app-header__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: var(--header-height);
+}
+
+.app-header__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-lg);
+}
+
+.app-header__nav {
+  display: flex;
+  gap: var(--space-1);
+  margin-right: auto;
+  margin-left: var(--space-6);
+}
+
+.app-header__link {
+  min-height: var(--tap-target);
+  padding: 0 var(--space-3);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.app-header__link[aria-current='page'] {
+  border-bottom-color: var(--brand);
+  color: var(--text);
+  font-weight: var(--weight-semibold);
+}
+.app-header__link:disabled {
+  color: var(--text-subtle);
+  cursor: not-allowed;
+}
+
+.brand-mark {
+  flex-shrink: 0;
+}
+.brand-mark-bg {
+  fill: var(--brand);
+}
+.brand-mark-wave,
+.brand-mark-swell {
+  fill: none;
+  stroke: var(--on-brand);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.brand-mark-wave {
+  stroke-width: 3;
+}
+.brand-mark-swell {
+  opacity: 0.55;
+  stroke-width: 2;
+}
+
+@media (max-width: 639.98px) {
+  .app-header {
+    position: static;
+  }
+  .app-header__inner {
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-3);
+    padding-block: var(--space-2);
+  }
+  .app-header__brand {
+    margin-right: auto;
+  }
+  .app-header__nav {
+    display: none;
+  }
+  /* Segment switch moves onto its own row, full width. */
+  .app-header__segment {
+    order: 10;
+    flex-basis: 100%;
+  }
+  .app-header__segment button {
+    flex: 1;
+  }
+}
+
+/* ---- Page layout ---- */
+.page {
+  padding-block: var(--space-6) var(--space-12);
+}
+
+/*
+ * Children, in order: welcome, hero, accounts, daily limit (.rail), transactions.
+ * Below 1024px that is one column in this order. From 1024px the daily limit
+ * moves into a 300px right column spanning the four left-hand rows.
+ */
+.dashboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+}
+.dashboard > * {
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .dashboard {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    align-items: start;
+  }
+  .dashboard > .rail {
+    grid-column: 2;
+    grid-row: 1 / span 4;
+    position: sticky;
+    top: calc(var(--header-height) + var(--space-6));
+  }
+}
+
+@media (max-width: 639.98px) {
+  .page {
+    /* Room for the fixed "New transfer" bar. */
+    padding-block: var(--space-4) calc(var(--tap-target) + var(--space-16));
+  }
+  .dashboard {
+    gap: var(--space-4);
+  }
+}
+
+.welcome {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.welcome__title {
+  font-size: var(--text-2xl);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+}
+.welcome__date {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.section-title {
+  margin-bottom: var(--space-3);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ---- Balance hero ---- */
+.balance-hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 160px;
+  padding: var(--space-6);
+  background: linear-gradient(135deg, var(--hero-from), var(--hero-to));
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  color: var(--on-hero);
+}
+.balance-hero__label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.balance-hero__amount {
+  margin-block: var(--space-1);
+  font-size: var(--text-display);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+}
+.balance-hero__caption {
+  font-size: var(--text-sm);
+}
+.balance-hero__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+@media (max-width: 639.98px) {
+  .balance-hero {
+    min-height: 140px;
+    padding: var(--space-5);
+  }
+  /* The single "New transfer" button is pinned to the bottom of the screen. */
+  .balance-hero__action {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: var(--z-header);
+    padding: var(--space-3) var(--gutter-mobile)
+      calc(var(--space-3) + env(safe-area-inset-bottom));
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+  }
+  .balance-hero__action .btn {
+    width: 100%;
+    background: var(--brand);
+    color: var(--on-brand);
+  }
+}
+
+/* ---- Accounts ---- */
+.account-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.account-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-5);
+}
+.account-card__name {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+}
+.account-card__number {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+.account-card__balance {
+  margin-top: var(--space-2);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+}
+.account-card__note {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+/* Mobile: only this row scrolls sideways, never the page. */
+@media (max-width: 639.98px) {
+  .account-list {
+    display: flex;
+    margin-inline: calc(var(--gutter-mobile) * -1);
+    padding-inline: var(--gutter-mobile);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter-mobile);
+  }
+  .account-list > * {
+    flex: 0 0 min(240px, 70%);
+    scroll-snap-align: start;
+  }
+}
+
+/* ---- Daily limit ---- */
+.daily-limit {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.daily-limit__remaining {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+}
+.daily-limit__note {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+/* ---- Transactions ---- */
+.transactions__count {
+  padding: var(--space-2) var(--space-5) 0;
+  min-height: calc(var(--space-2) + 1.5em);
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+.transactions__count:empty {
+  display: none;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.txn-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.txn-table th {
+  padding: var(--space-3) var(--space-5);
+  background: var(--surface-muted);
+  color: var(--text-muted);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.txn-table td {
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border);
+  font-size: var(--text-sm);
+}
+.txn-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.txn-table tbody tr:hover {
+  background: var(--surface-muted);
+}
+.txn-table__amount-head,
+.txn__amount {
+  text-align: right;
+}
+.txn__description {
+  font-weight: var(--weight-medium);
+}
+.txn__category,
+.txn__date {
+  color: var(--text-muted);
+}
+.txn__amount {
+  font-weight: var(--weight-semibold);
+  white-space: nowrap;
+}
+.txn__amount--in {
+  color: var(--positive);
+}
+
+.txn-skeleton-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Mobile: each row becomes "description … amount / category · date … status". */
+@media (max-width: 639.98px) {
+  .transactions__count {
+    padding-inline: var(--space-4);
+  }
+  .txn-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+  .txn-table,
+  .txn-table tbody {
+    display: block;
+  }
+  .txn-table tr {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    grid-template-areas:
+      'desc desc amount'
+      'cat date status';
+    gap: var(--space-1) var(--space-2);
+    min-height: var(--tap-target);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--border);
+  }
+  .txn-table tbody tr:last-child {
+    border-bottom: none;
+  }
+  .txn-table td {
+    padding: 0;
+    border: none;
+    white-space: normal;
+  }
+  .txn__description {
+    grid-area: desc;
+  }
+  .txn__amount {
+    grid-area: amount;
+  }
+  .txn__category {
+    grid-area: cat;
+  }
+  .txn__date {
+    grid-area: date;
+  }
+  .txn__date::before {
+    content: '·';
+    margin-right: var(--space-2);
+  }
+  .txn__status {
+    grid-area: status;
+    justify-self: end;
+  }
+  .txn-skeleton-row {
+    padding-inline: var(--space-4);
+  }
+}
+
+/* ---- Debug menu (only rendered with ?debug) ---- */
+.debug-menu {
+  padding-bottom: calc(var(--tap-target) + var(--space-16));
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+.debug-menu summary {
+  min-height: var(--tap-target);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.debug-menu fieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+.debug-menu__option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-target);
+}
